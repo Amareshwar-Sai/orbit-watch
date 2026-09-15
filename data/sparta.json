@@ -1,0 +1,16 @@
+{
+  "snapshot": "orbitwatch-curated-2026-09-15",
+  "publisher": "The Aerospace Corporation",
+  "source": "https://sparta.aerospace.org/",
+  "scope": "One verified starter technique, not the full SPARTA catalog. Add definitions only after checking their current status and scope.",
+  "techniques": [
+    {
+      "id": "IA-0007",
+      "name": "Compromise Ground System",
+      "url": "https://sparta.aerospace.org/technique/IA-0007/",
+      "checked_date": "2026-09-15",
+      "deprecated": false,
+      "scope_note": "Ground-system compromise may provide a route toward space-system operations. For KA-SAT, use this as a qualified ground-segment analogy; evidence does not establish spacecraft compromise."
+    }
+  ]
+}

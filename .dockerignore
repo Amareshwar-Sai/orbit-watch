@@ -1,0 +1,11 @@
+.git
+.github
+var
+.venv
+__pycache__
+**/__pycache__
+.env
+*.db
+*.key
+*.pem
+test-results

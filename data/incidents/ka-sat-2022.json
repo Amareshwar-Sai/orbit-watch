@@ -1,0 +1,103 @@
+{
+  "id": "ka-sat-2022",
+  "title": "KA-SAT: when the management network became the attack path",
+  "kind": "incident",
+  "event_date": "2022-02-24",
+  "segment": "Ground management network and user terminals",
+  "summary": "Viasat reported a February 2022 attack that interrupted consumer broadband across parts of Ukraine and Europe. This case examines the ground management path and modem disruption, not a demonstrated takeover of the satellite.",
+  "summary_sources": ["V1"],
+  "sources": [
+    {
+      "id": "V1",
+      "title": "Viasat: KA-SAT Network cyber attack overview",
+      "url": "https://www.viasat.com/perspectives/corporate/2022/ka-sat-network-cyber-attack-overview/",
+      "published_date": "2022-03-30",
+      "accessed_date": "2026-09-15"
+    },
+    {
+      "id": "S1",
+      "title": "Aerospace SPARTA: IA-0007 Compromise Ground System",
+      "url": "https://sparta.aerospace.org/technique/IA-0007/",
+      "published_date": "2022-10-19",
+      "accessed_date": "2026-09-15"
+    }
+  ],
+  "claims": [
+    {
+      "text": "The operator reported a ground-network intrusion and loss of connectivity for tens of thousands of modems.",
+      "certainty": "reported",
+      "sources": ["V1"]
+    },
+    {
+      "text": "Viasat's account did not establish a compromise of the spacecraft or theft of end-user data.",
+      "certainty": "reported",
+      "sources": ["V1"]
+    }
+  ],
+  "steps": [
+    {
+      "text": "A VPN appliance misconfiguration enabled access to the trusted management network.",
+      "certainty": "reported",
+      "sources": ["V1"]
+    },
+    {
+      "text": "The intruder traversed the management environment to reach a modem-management segment.",
+      "certainty": "reported",
+      "sources": ["V1"]
+    },
+    {
+      "text": "Management commands altered critical modem flash data, preventing affected terminals from reconnecting.",
+      "certainty": "reported",
+      "sources": ["V1"]
+    }
+  ],
+  "sparta_snapshot": "orbitwatch-curated-2026-09-15",
+  "mappings": [
+    {
+      "technique": "IA-0007",
+      "confidence": "medium",
+      "rationale": "The management-plane entry resembles the ground-system compromise concept. This is an analyst's qualified mapping at the ground segment: it does not assert subsequent execution on a spacecraft, and it does not map every behaviour in the incident.",
+      "sources": ["V1", "S1"]
+    }
+  ],
+  "controls": [
+    {
+      "phase": "prevent",
+      "action": "Test remote-access policy as part of every configuration change",
+      "why": "Treat VPN routes, permitted management destinations, identity requirements and administrative roles as reviewable configuration. Require peer review for changes, use strong administrator authentication, and remove broad network access wherever a narrower route satisfies the operational need. Authentication alone will not correct an overly permissive routing policy.",
+      "validation": "In an isolated management-network lab, verify that a normal remote user cannot reach the modem-management service. Change an allow rule deliberately in a test branch and verify that the policy test fails before deployment."
+    },
+    {
+      "phase": "prevent",
+      "action": "Constrain privileged management commands and their blast radius",
+      "why": "A trusted session should not imply authority to make arbitrary fleet-wide changes. Separate diagnostic and destructive privileges. Consider a second approval for high-impact operations, target-count limits, staged rollouts and authenticated management requests. Tune these safeguards against mission response-time requirements.",
+      "validation": "Against simulated terminals, submit a batch exceeding the permitted target count. Confirm rejection, then confirm that an authorised small batch succeeds and records who approved it."
+    },
+    {
+      "phase": "detect",
+      "action": "Correlate management activity with terminal availability",
+      "why": "Monitor unusual administrative origins, sudden increases in command volume and unexpected terminal disconnects together. Preserve logs outside the management system so an intruder cannot erase the sole record of their actions. Use baselines that account for planned maintenance to reduce false alarms.",
+      "validation": "Replay synthetic management events and terminal-health records into a test detector. Measure whether a mass-change sequence followed by disconnects produces one actionable alert, while an approved maintenance sequence is labelled appropriately."
+    },
+    {
+      "phase": "contain",
+      "action": "Prepare a narrowly scoped management-access shutdown",
+      "why": "Define which credentials, sessions and control paths can be disabled when the management plane is suspected compromised. Plan a separate operator communication channel. A blanket shutdown may itself interrupt critical service, so rehearse the trade-off and define who may authorise it.",
+      "validation": "Run a tabletop exercise and a lab drill. Time how long it takes to revoke one compromised role, preserve investigation records and maintain an unaffected service partition."
+    },
+    {
+      "phase": "recover",
+      "action": "Maintain and rehearse terminal recovery procedures",
+      "why": "Keep known-good configuration, recovery instructions and an inventory of replacement capacity. Validate recovery on representative devices before scaling. Restoration should include closing the entry path and rotating affected credentials; otherwise the restored service may be exposed to the same adversary.",
+      "validation": "Use disposable terminal simulators with deliberately invalid configuration. Restore from a known-good baseline, verify service health, and record time-to-recovery plus the resources needed for a larger fleet."
+    }
+  ],
+  "impact": {
+    "mission": 4,
+    "scope": 4,
+    "recovery": 3,
+    "rationale": "Analyst priority is high because connectivity loss crossed national boundaries and recovery required substantial terminal support. These ordinal scores are editorial judgements, not measurements of spacecraft damage.",
+    "sources": ["V1"]
+  },
+  "limitations": "This is a historical starter case based on the operator's March 2022 account, not a comprehensive investigation incorporating every later report. Exact intrusion mechanics, credentials and command syntax remain unspecified here. A parallel traffic-based disruption was also reported; the three-step sequence focuses only on the management intrusion. The SPARTA assessment is partial and requires analyst review. Proposed controls have not been validated against Viasat's actual architecture."
+}

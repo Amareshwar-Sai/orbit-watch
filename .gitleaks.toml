@@ -1,0 +1,6 @@
+title = "OrbitWatch secret scan"
+[extend]
+useDefault = true
+[allowlist]
+description = "Generated dependencies, caches and runtime database are not project source"
+paths = ['''(^|/)\.venv/''', '''(^|/)var/''', '''(^|/)__pycache__/''']

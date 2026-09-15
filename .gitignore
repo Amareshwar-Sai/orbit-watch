@@ -1,0 +1,16 @@
+var/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.pem
+*.key
+test-results/
+
+# Local parser backup
+*.before-nasa-fix

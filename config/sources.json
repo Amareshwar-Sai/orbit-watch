@@ -1,0 +1,33 @@
+{
+  "allowed_hosts": ["www.nasa.gov", "www.ncsc.gov.uk", "sparta.aerospace.org"],
+  "space_terms": ["satellite", "spacecraft", "satcom", "ground station", "ground segment", "gnss", "gps", "ka-sat", "starlink"],
+  "security_terms": ["cyber", "cybersecurity", "attack", "attacks", "vulnerability", "vulnerabilities", "intrusion", "malware", "ransomware", "jamming", "spoofing", "breach"],
+  "sources": [
+    {
+      "id": "nasa",
+      "name": "NASA recently published content",
+      "url": "https://www.nasa.gov/feed/",
+      "kind": "feed",
+      "enabled": true,
+      "discovery": "https://www.nasa.gov/rss-feeds/",
+      "coverage_note": "General space reporting, not a dedicated incident feed. Space AND security keywords filter the queue."
+    },
+    {
+      "id": "ncsc",
+      "name": "UK NCSC all content",
+      "url": "https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml",
+      "kind": "feed",
+      "enabled": true,
+      "discovery": "https://www.ncsc.gov.uk/information/rss-feeds",
+      "coverage_note": "General cybersecurity coverage; does not guarantee complete space-security coverage."
+    },
+    {
+      "id": "sparta-ground",
+      "name": "SPARTA ground-system technique reference",
+      "url": "https://sparta.aerospace.org/technique/IA-0007/",
+      "kind": "page",
+      "enabled": true,
+      "coverage_note": "Reference-page change watcher, not an incident feed. Page changes can include cosmetic edits."
+    }
+  ]
+}

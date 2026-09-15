@@ -1,0 +1,37 @@
+services:
+  dashboard:
+    build: .
+    image: orbitwatch:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - orbitwatch-data:/app/var
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    restart: unless-stopped
+  collector:
+    profiles: [daily]
+    build: .
+    image: orbitwatch:local
+    command: ["python", "-m", "orbitwatch", "worker"]
+    healthcheck:
+      disable: true
+    volumes:
+      - orbitwatch-data:/app/var
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    cpus: 0.5
+    pids_limit: 64
+    restart: unless-stopped
+volumes:
+  orbitwatch-data:

@@ -1,0 +1,52 @@
+name: OrbitWatch security and tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test-and-sast:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Behaviour and security regression tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Install development-only scanner
+        run: |
+          python3 -m venv .venv
+          .venv/bin/python -m pip install -r requirements-dev.txt
+      - name: Static security analysis (medium and high findings block)
+        run: .venv/bin/bandit -r orbitwatch -ll
+      - name: Scan checked-out files for secrets (redacted output)
+        run: |
+          docker run --rm -v "$PWD:/work:ro" ghcr.io/gitleaks/gitleaks:v8.30.1 dir /work --redact --no-banner
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Build non-root application image
+        run: docker build --pull -t orbitwatch:ci .
+      - name: Container smoke test
+        run: |
+          docker run --rm orbitwatch:ci python -m orbitwatch seed
+          docker run --detach --name orbitwatch-smoke --read-only --tmpfs /app/var:uid=10001,gid=10001 --cap-drop ALL --security-opt no-new-privileges -p 127.0.0.1:8000:8000 orbitwatch:ci
+          python3 scripts/healthcheck.py
+      - name: Stop smoke-test container
+        if: always()
+        run: docker rm -f orbitwatch-smoke 2>/dev/null || true
+      - name: Audit image packages without mounting Docker socket
+        run: |
+          mkdir -p var
+          docker save orbitwatch:ci -o var/image.tar
+          docker run --rm -v "$PWD/var:/scan:ro" anchore/grype:v0.118.0 docker-archive:/scan/image.tar --fail-on high
+  # No deployment: publication and external hosting are a later milestone.
