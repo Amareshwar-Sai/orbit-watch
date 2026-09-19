@@ -1,4 +1,5 @@
-FROM python:3.12-slim
+FROM python:3.14-slim
+RUN python -m pip install --no-cache-dir --upgrade "pip==26.2.0"
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 ORBITWATCH_DB=/app/var/orbitwatch.db
 WORKDIR /app
 RUN groupadd --gid 10001 orbitwatch && useradd --uid 10001 --gid 10001 --no-create-home orbitwatch \

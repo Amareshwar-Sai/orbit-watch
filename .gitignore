@@ -11,6 +11,8 @@ __pycache__/
 *.pem
 *.key
 test-results/
+explain.txt
+settings.json
 
 # Local parser backup
 *.before-nasa-fix

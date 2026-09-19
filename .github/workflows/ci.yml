@@ -38,8 +38,8 @@ jobs:
         run: docker build --pull -t orbitwatch:ci .
       - name: Container smoke test
         run: |
-          docker run --rm orbitwatch:ci python -m orbitwatch seed
           docker run --detach --name orbitwatch-smoke --read-only --tmpfs /app/var:uid=10001,gid=10001 --cap-drop ALL --security-opt no-new-privileges -p 127.0.0.1:8000:8000 orbitwatch:ci
+          docker exec orbitwatch-smoke python -m orbitwatch seed 
           python3 scripts/healthcheck.py
       - name: Stop smoke-test container
         if: always()
