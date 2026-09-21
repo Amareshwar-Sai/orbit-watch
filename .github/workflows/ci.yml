@@ -46,7 +46,21 @@ jobs:
         run: docker rm -f orbitwatch-smoke 2>/dev/null || true
       - name: Audit image packages without mounting Docker socket
         run: |
+          python3 - <<'PY'
+          from datetime import datetime, timezone, date
+          if datetime.now(timezone.utc).date() >= date(2026, 10, 20):
+              raise SystemExit("Grype exceptions need review before continuing.")
+          PY
+
           mkdir -p var
           docker save orbitwatch:ci -o var/image.tar
-          docker run --rm -v "$PWD/var:/scan:ro" anchore/grype:v0.118.0 docker-archive:/scan/image.tar --fail-on high
+
+          docker run --rm \
+            -v "$PWD/var:/scan:ro" \
+            -v "$PWD/config/grype.yaml:/config/grype.yaml:ro" \
+            anchore/grype:v0.118.0 \
+            docker-archive:/scan/image.tar \
+            --config /config/grype.yaml \
+            --show-suppressed \
+            --fail-on high
   # No deployment: publication and external hosting are a later milestone.
