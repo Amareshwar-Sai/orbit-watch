@@ -93,3 +93,32 @@ been tested here.
 - Gitleaks: https://github.com/gitleaks/gitleaks
 - Grype: https://github.com/anchore/grype
 - Secure software development framework: https://csrc.nist.gov/projects/ssdf
+
+
+## Temporary container vulnerability exceptions
+
+Grype scans the application image for known vulnerabilities.
+Unaccepted High and Critical findings fail CI.
+
+Specific exceptions are recorded in config/grype.yaml.
+Each rule identifies a CVE, package, version and review reason.
+Accepted findings remain visible in scan output as suppressed.
+
+These exceptions are temporary risk acceptances for local learning
+and CI. They do not mean the vulnerabilities have been fixed or
+that the image is approved for public deployment.
+
+The reviewed runtime uses:
+
+- A non-root user (UID 10001).
+- A read-only root filesystem.
+- All Linux capabilities dropped.
+- No-new-privileges enabled.
+
+Some affected components were absent in our local checks.
+Others remain installed, with restricted attack conditions or
+uncertainty about whether the application can reach the affected code.
+
+Reassess exceptions when application code, installed packages or
+runtime settings change. The CI review deadline is 2026-10-20;
+the workflow stops at that date until the exceptions are reviewed.
